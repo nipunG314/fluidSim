@@ -66,8 +66,7 @@ function resizeHandler() {
 
 function resetCanvas() {
     ctx.fillStyle = "#000000";
-    ctx.rect(0, 0, canvas.width, canvas.height);
-    ctx.fill();
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 function drawGrid() {
