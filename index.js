@@ -54,6 +54,7 @@ function update(lag) {
 function draw() {
     resetCanvas();
     drawGrid();
+    drawDensityField();
 }
 
 // Helpers functions
@@ -82,6 +83,16 @@ function drawGrid() {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = "#FFFFFF";
     ctx.stroke();
+}
+
+function drawDensityField() {
+    ctx.fillStyle = "#FFFFFF";
+    for(let i = 0; i < tileCountX; i++) {
+        for(let j = 0; j < tileCountY; j++) {
+            ctx.globalAlpha = densityField[i * tileCountY + j];
+            ctx.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
+        }
+    }
 }
 
 function addDensityFromSources(lag) {
