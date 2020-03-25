@@ -19,6 +19,10 @@ const canvasWidth = tileCountX * tileSize;
 const canvasHeight = tileCountY * tileSize;
 const lineWidth = tileSize / 15;
 
+// Pointer variables
+let pointerX = 0;
+let pointerY = 0;
+
 // Fluid Controls
 // Idealy, don't put the inflow and outflow rate
 // more than 0.01
@@ -52,6 +56,7 @@ function update(lag) {
 }
 
 function draw() {
+    pointer.innerHTML = `(${pointerX}, ${pointerY}): ${densityField[pointerX * tileCountY + pointerY]}`;
     resetCanvas();
     drawGrid();
     drawDensityField();
@@ -124,7 +129,8 @@ window.onresize = resizeHandler;
 // Update Pointer position
 canvas.addEventListener("mousemove", event => {
     let {posX, posY} = getIndex(event.clientX, event.clientY);
-    pointer.innerHTML = `(${posX}, ${posY})`;
+    pointerX = posX;
+    pointerY = posY;
 });
 
 // Add Sources and Sinks
