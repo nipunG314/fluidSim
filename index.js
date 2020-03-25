@@ -27,8 +27,8 @@ let outflowRate = 0.01
 
 // Fluid State
 let densityField = new Float64Array(tileCountX * tileCountY);
-let sources = [];
-let sinks = [];
+let sources = new Set();
+let sinks = new Set();
 
 // Event Code
 resizeHandler();
@@ -85,18 +85,14 @@ function drawGrid() {
 }
 
 function addDensityFromSources(lag) {
-    sources.forEach(source => {
-        let {posX, posY} = source;
-        let sourcePos = posX * tileCountY + posY;
+    sources.forEach(sourcePos => {
         let additionalDensity = (1 - densityField[sourcePos]) * inflowRate * lag / requiredLag;
         densityField[sourcePos] = Math.min(1.0, densityField[sourcePos] + additionalDensity);
     });
 }
 
 function removeDensityFromSinks(lag) {
-    sinks.forEach(sink => {
-        let {posX, posY} = sink;
-        let sinkPos = posX * tileCountY + posY;
+    sinks.forEach(sinkPos => {
         let removedDensity = densityField[sinkPos] * outflowRate * lag / requiredLag;
         densityField[sinkPos] = Math.max(0.0, densityField[sinkPos] - removedDensity);
     });
@@ -123,9 +119,17 @@ canvas.addEventListener("mousemove", event => {
 
 // Add Sources and Sinks
 canvas.addEventListener("click", event => {
-    sources.push(getIndex(event.clientX, event.clientY));
+    let {posX, posY} = getIndex(event.clientX, event.clientY);
+    let sourcePos = posX * tileCountY + posY;
+    if (!sources.has(sourcePos)) {
+        sources.add(sourcePos);
+    }
 });
 canvas.addEventListener("contextmenu", event => {
     event.preventDefault();
-    sinks.push(getIndex(event.clientX, event.clientY));
+    let {posX, posY} = getIndex(event.clientX, event.clientY);
+    let sinkPos = posX * tileCountY + posY;
+    if (!sinks.has(sinkPos)) {
+        sinks.add(sinkPos);
+    }
 });
