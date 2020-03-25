@@ -132,15 +132,17 @@ canvas.addEventListener("mousemove", event => {
 canvas.addEventListener("click", event => {
     let {posX, posY} = getIndex(event.clientX, event.clientY);
     let sourcePos = posX * tileCountY + posY;
-    if (!sources.has(sourcePos)) {
-        sources.add(sourcePos);
+    if (sinks.has(sourcePos)) {
+        sinks.delete(sourcePos);
     }
+    sources.add(sourcePos);
 });
 canvas.addEventListener("contextmenu", event => {
     event.preventDefault();
     let {posX, posY} = getIndex(event.clientX, event.clientY);
     let sinkPos = posX * tileCountY + posY;
-    if (!sinks.has(sinkPos)) {
-        sinks.add(sinkPos);
+    if (sources.has(sinkPos)) {
+        sources.delete(sinkPos);
     }
+    sinks.add(sinkPos);
 });
