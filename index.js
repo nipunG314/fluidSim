@@ -90,11 +90,18 @@ function drawGrid() {
 }
 
 function drawDensityField() {
-    ctx.fillStyle = "#FFFFFF";
     for(let i = 0; i < tileCountX; i++) {
         for(let j = 0; j < tileCountY; j++) {
-            ctx.globalAlpha = densityField[i * tileCountY + j];
-            ctx.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
+            let color = new Int16Array(3);
+            color[0] = Math.floor(lerp(0, 255, densityField[i * tileCountY + j]));
+            color[1] = Math.floor(lerp(0, 255, densityField[i * tileCountY + j]));
+            color[2] = Math.floor(lerp(0, 255, densityField[i * tileCountY + j]));
+            if (color[0] != 0 || color[1] != 0 || color[2] != 0) {
+                console.log(color);
+            }
+            ctx.fillStyle = rgbToHex(color);
+            console.log(ctx.fillStyle);
+            ctx.fillRect(i * tileSize + 1, j * tileSize + 1, tileSize - 2, tileSize - 2);
         }
     }
 }
@@ -121,6 +128,15 @@ const getIndex = (mouseX, mouseY) => {
     let posY = Math.floor(regionY / tileSize);
 
     return {posX, posY};
+};
+
+const rgbToHex = (rgb) => {
+    const [r, g, b] = rgb;
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+};
+
+const lerp = (x, y, z) => {
+    return (1.0 - z) * x + z * y;
 };
 
 // Event Listeners
