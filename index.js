@@ -25,9 +25,9 @@ let pointerY = 0;
 
 // Fluid Controls
 // Idealy, don't put the inflow and outflow rate
-// more than 0.01
-let inflowRate = 0.01
-let outflowRate = 0.01
+// more than 0.03
+let inflowRate = 0.03
+let outflowRate = 0.03
 
 // Fluid State
 let densityField = new Float64Array(tileCountX * tileCountY);
@@ -36,6 +36,8 @@ let sinks = new Set();
 
 // Event Code
 resizeHandler();
+resetCanvas();
+drawGrid();
 
 function loop(curentFrame) {
     if (!lastFrame) { lastFrame = curentFrame; }
@@ -57,8 +59,6 @@ function update(lag) {
 
 function draw() {
     pointer.innerHTML = `(${pointerX}, ${pointerY}): ${densityField[pointerX * tileCountY + pointerY]}`;
-    resetCanvas();
-    drawGrid();
     drawDensityField();
 }
 
@@ -92,15 +92,11 @@ function drawGrid() {
 function drawDensityField() {
     for(let i = 0; i < tileCountX; i++) {
         for(let j = 0; j < tileCountY; j++) {
-            let color = new Int16Array(3);
-            color[0] = Math.floor(lerp(0, 255, densityField[i * tileCountY + j]));
-            color[1] = Math.floor(lerp(0, 255, densityField[i * tileCountY + j]));
-            color[2] = Math.floor(lerp(0, 255, densityField[i * tileCountY + j]));
-            if (color[0] != 0 || color[1] != 0 || color[2] != 0) {
-                console.log(color);
-            }
-            ctx.fillStyle = rgbToHex(color);
-            console.log(ctx.fillStyle);
+            ctx.fillStyle = "#000000";
+            ctx.globalAlpha = 1.0;
+            ctx.fillRect(i * tileSize + 1, j * tileSize + 1, tileSize - 2, tileSize - 2);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.globalAlpha = densityField[i * tileCountY + j];
             ctx.fillRect(i * tileSize + 1, j * tileSize + 1, tileSize - 2, tileSize - 2);
         }
     }
@@ -128,15 +124,6 @@ const getIndex = (mouseX, mouseY) => {
     let posY = Math.floor(regionY / tileSize);
 
     return {posX, posY};
-};
-
-const rgbToHex = (rgb) => {
-    const [r, g, b] = rgb;
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-};
-
-const lerp = (x, y, z) => {
-    return (1.0 - z) * x + z * y;
 };
 
 // Event Listeners
