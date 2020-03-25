@@ -38,12 +38,22 @@ function loop(curentFrame) {
     let lag = curentFrame - lastFrame;
 
     if (lag > requiredLag) {
-        resetCanvas();
-        drawGrid();
+        update(lag);
+        draw();
         lastFrame = curentFrame;
     }
 
-    requestAnimationFrame();
+    requestAnimationFrame(loop);
+}
+
+function update(lag) {
+    addDensityFromSources(lag);
+    removeDensityFromSinks(lag);
+}
+
+function draw() {
+    resetCanvas();
+    drawGrid();
 }
 
 // Helpers functions
@@ -72,6 +82,24 @@ function drawGrid() {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = "#FFFFFF";
     ctx.stroke();
+}
+
+function addDensityFromSources(lag) {
+    sources.forEach(source => {
+        let {posX, posY} = source;
+        let sourcePos = posX * tileCountY + posY;
+        let additionalDensity = (1 - densityField[sourcePos]) * inflowRate * lag / requiredLag;
+        densityField[sourcePos] = Math.min(1.0, densityField[sourcePos] + additionalDensity);
+    });
+}
+
+function removeDensityFromSinks(lag) {
+    sinks.forEach(sink => {
+        let {posX, posY} = sink;
+        let sinkPos = posX * tileCountY + posY;
+        let removedDensity = densityField[sinkPos] * outflowRate * lag / requiredLag;
+        densityField[sinkPos] = Math.max(0.0, densityField[sinkPos] - removedDensity);
+    });
 }
 
 const getIndex = (mouseX, mouseY) => {
